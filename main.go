@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 )
 
@@ -41,6 +43,7 @@ func readAscii() []string {
 }
 
 func printAsciiArt(txt, arrSplit []string) {
+
 	if txt[0] == "" {
 		fmt.Println()
 		return
@@ -51,17 +54,27 @@ func printAsciiArt(txt, arrSplit []string) {
 			fmt.Println()
 			continue
 		}
+		firstLine := true
 		for k := 0; k < 8; k++ {
+			str := ""
+
 			for _, s := range word {
 
 				strCut := strings.Split(arrSplit[s-32], "\n")
 				for _, ascii := range strCut[k] {
 
-					fmt.Print(string(ascii))
+					str += string(ascii)
 
 				}
 
 			}
+			if firstLine {
+				firstLine = false
+				fitConsole(str)
+
+			}
+
+			fmt.Print(str)
 
 			fmt.Println()
 		}
@@ -83,6 +96,31 @@ func checkTxt(str string) error {
 		return errors.New(fmt.Sprintf("a character \"%v\" is not available.", noChar))
 	}
 	return nil
+}
+func check(errMsg string, err error) {
+	if err != nil {
+		fmt.Println(errMsg, err)
+		os.Exit(1)
+	}
+}
+
+func fitConsole(s string) {
+
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	out, err := cmd.Output()
+	check("Error measuring console size:", err)
+
+	outStr := string(out)
+	outStr = strings.TrimSpace(outStr)
+	heightWidth := strings.Split(outStr, " ")
+	width, err := strconv.Atoi(heightWidth[1])
+	check("Error measuring console size:", err)
+
+	if len(s) > width {
+		fmt.Println("The input string doesn't fit into terminal.")
+		os.Exit(1)
+	}
 }
 
 func main() {
