@@ -24,11 +24,12 @@ func start() (string, error) {
 
 func readAscii() []string {
 
-	file, err := os.ReadFile("standard.txt")
+	file, err := os.ReadFile("banners/thinkertoy.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
 	str0 := ""
+	file = []byte(strings.ReplaceAll(string(file), "\r", ""))
 	arrSplit := strings.Split(string(file), "\n\n")
 	for i, v := range arrSplit[0] {
 		if i > 0 {
@@ -50,8 +51,10 @@ func printAsciiArt(txt, arrSplit []string) {
 	}
 
 	for _, word := range txt {
-		if word == "" {
+
+		if word == "\n" {
 			fmt.Println()
+
 			continue
 		}
 		firstLine := true
@@ -138,6 +141,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println(txt)
 
 	arrTxt := strings.Split(txt, "\\n")
 
